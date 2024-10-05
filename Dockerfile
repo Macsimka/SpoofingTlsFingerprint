@@ -3,11 +3,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN go build -o myapp main.go
+RUN go build -o goproxy main.go
 
 FROM golang:alpine3.20
 WORKDIR /app
 
-COPY --from=builder /app/myapp .
+COPY --from=builder /app/goproxy .
 
-CMD ["./myapp"]
+CMD ["./goproxy"]
