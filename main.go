@@ -31,7 +31,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/check-status", CheckStatus).Methods("GET")
 	router.HandleFunc("/handle", Handle).Methods("POST")
-	fmt.Println("The proxy server is running")
+	fmt.Println("The proxy server is running. Port: " + port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
