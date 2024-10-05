@@ -6,13 +6,11 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"strings"
 
 	"log"
 	"net/http"
-	"net/http/cookiejar"
-	url2 "net/url"
 	"os"
 
 	"github.com/Danny-Dasilva/CycleTLS/cycletls"
@@ -63,12 +61,7 @@ func Handle(responseWriter http.ResponseWriter, request *http.Request) {
 		})
 	}
 
-	cookiesJar, _ := cookiejar.New(nil)
-	requestUrl, _ := url2.Parse(handleRequest.Url)
-	cookiesJar.SetCookies(requestUrl, cookies)
-
 	resp, err := client.Do(handleRequest.Url, cycletls.Options{
-		//CookiesJar:         cookiesJar,
 		InsecureSkipVerify: handleRequest.InsecureSkipVerify,
 		Body:               handleRequest.Body,
 		Proxy:              handleRequest.Proxy,
@@ -94,20 +87,6 @@ func Handle(responseWriter http.ResponseWriter, request *http.Request) {
 		Text:    DecodeResponse(&resp),
 		Headers: resp.Headers,
 		Status:  resp.Status,
-		//Url:     resp.Url,
-	}
-
-	for _, cookie := range cookiesJar.Cookies(requestUrl) {
-		handleResponse.Payload.Cookies = append(handleResponse.Payload.Cookies, &cycletls.Cookie{
-			Name:     cookie.Name,
-			Value:    cookie.Value,
-			Path:     cookie.Path,
-			Domain:   cookie.Domain,
-			Expires:  cookie.Expires,
-			MaxAge:   cookie.MaxAge,
-			Secure:   cookie.Secure,
-			HTTPOnly: cookie.HttpOnly,
-		})
 	}
 
 	json.NewEncoder(responseWriter).Encode(handleResponse)
@@ -118,7 +97,7 @@ func DecodeResponse(response *cycletls.Response) string {
 	case "gzip":
 		reader, _ := gzip.NewReader(strings.NewReader(response.Body))
 		defer reader.Close()
-		readerResponse, _ := ioutil.ReadAll(reader)
+		readerResponse, _ := io.ReadAll(reader)
 		return string(readerResponse)
 	default:
 		return response.Body
