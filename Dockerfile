@@ -12,4 +12,4 @@ COPY --from=builder /app/goproxy .
 
 ENV PORT 8000
 
-CMD ["./goproxy", "${PORT}"]
+CMD ["sh", "-c", "./goproxy $PORT"]
