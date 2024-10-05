@@ -6,15 +6,17 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"github.com/Skyuzii/CycleTLS/cycletls"
-	"github.com/gorilla/mux"
 	"io/ioutil"
+	"strings"
+
 	"log"
 	"net/http"
 	"net/http/cookiejar"
 	url2 "net/url"
 	"os"
-	"strings"
+
+	"github.com/Danny-Dasilva/CycleTLS/cycletls"
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -66,7 +68,7 @@ func Handle(responseWriter http.ResponseWriter, request *http.Request) {
 	cookiesJar.SetCookies(requestUrl, cookies)
 
 	resp, err := client.Do(handleRequest.Url, cycletls.Options{
-		CookiesJar:         cookiesJar,
+		//CookiesJar:         cookiesJar,
 		InsecureSkipVerify: handleRequest.InsecureSkipVerify,
 		Body:               handleRequest.Body,
 		Proxy:              handleRequest.Proxy,
@@ -90,9 +92,9 @@ func Handle(responseWriter http.ResponseWriter, request *http.Request) {
 	handleResponse.Success = true
 	handleResponse.Payload = &Response.HandleResponsePayload{
 		Text:    DecodeResponse(&resp),
-		Headers: resp.Response.Headers,
-		Status:  resp.Response.Status,
-		Url:     resp.Response.Url,
+		Headers: resp.Headers,
+		Status:  resp.Status,
+		//Url:     resp.Url,
 	}
 
 	for _, cookie := range cookiesJar.Cookies(requestUrl) {
@@ -112,13 +114,13 @@ func Handle(responseWriter http.ResponseWriter, request *http.Request) {
 }
 
 func DecodeResponse(response *cycletls.Response) string {
-	switch response.Response.Headers["Content-Encoding"] {
+	switch response.Headers["Content-Encoding"] {
 	case "gzip":
-		reader, _ := gzip.NewReader(strings.NewReader(response.Response.Body))
+		reader, _ := gzip.NewReader(strings.NewReader(response.Body))
 		defer reader.Close()
 		readerResponse, _ := ioutil.ReadAll(reader)
 		return string(readerResponse)
 	default:
-		return response.Response.Body
+		return response.Body
 	}
 }
