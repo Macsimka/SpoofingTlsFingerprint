@@ -1,23 +1,35 @@
 # <a href='https://habr.com/ru/post/596411/'>SpoofingTlsFingerprint</a>
+
 Прокси сервер для обхода TLS Fingerprint
 
 ## Зависимости
+
 ```
-golang ^v1.17
+golang ^v1.22.0
+```
+
+## Запуск в Docker
+
+```
+docker run -d -e PORT=8000 -p 8000:8000 --restart always --name goproxy macsimka/goproxy
 ```
 
 ## Запуск
+
 ```
 go run main.go port
 ```
 
 ## Сборка в exe
+
 ```
 go build -o main.exe main.go
 ```
 
 ## Основные структры SpoofingTlsFingerprint
+
 <a href="https://github.com/Skyuzii/SpoofingTlsFingerprint/blob/main/Request/HandleRequest.go">HandleRequest</a>
+
 ```GO
 Cookies   []cycletls.Cookie `json:"cookies"`
 Method    string            `json:"method"`
@@ -31,6 +43,7 @@ Headers   map[string]string `json:"headers"`
 ```
 
 <a href="https://github.com/Skyuzii/SpoofingTlsFingerprint/blob/main/Response/HandleResponse.go">HandleResponse</a>
+
 ```GO
 Success bool                   `json:"success"`
 Error   string                 `json:"error"`
@@ -38,6 +51,7 @@ Payload *HandleResponsePayload `json:"payload"`
 ```
 
 <a href="https://github.com/Skyuzii/SpoofingTlsFingerprint/blob/main/Response/HandleResponse.go">HandleResponsePayload</a>
+
 ```GO
 Text    string             `json:"text"`
 Headers map[string]string  `json:"headers"`

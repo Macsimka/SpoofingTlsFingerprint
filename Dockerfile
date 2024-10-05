@@ -10,4 +10,6 @@ WORKDIR /app
 
 COPY --from=builder /app/goproxy .
 
-CMD ["./goproxy"]
+ENV PORT 8000
+
+CMD ["./goproxy", "${PORT}"]
